@@ -10,6 +10,8 @@ services:
   web:
     build: .
     container_name: upadlosciowe_local
+    # Wstaje sam po restarcie komputera; zatrzymuje się dopiero po jawnym `stop`/`down`.
+    restart: unless-stopped
     ports:
       - "127.0.0.1:8090:8000"
     env_file:

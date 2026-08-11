@@ -26,6 +26,21 @@ cp .env.example .env
 Oferty dodaje się przez `/admin/` (edytor Quill z uploadem obrazów,
 inline'y zdjęć — auto-watermark z QR — i załączników, akcja „Utwórz kolejną edycję").
 
+## Kontener testowy (prod-like, localhost)
+
+```bash
+cp .env.docker-local.example .env.docker-local     # ustaw własny SECRET_KEY
+docker compose -f docker-compose.local.yml up -d --build
+docker compose -f docker-compose.local.yml exec web python manage.py migrate
+docker compose -f docker-compose.local.yml exec web python manage.py seed_slowniki
+docker compose -f docker-compose.local.yml exec web python manage.py seed_demo   # opcjonalnie dane demo
+docker compose -f docker-compose.local.yml exec web python manage.py createsuperuser
+```
+
+Portal: `http://127.0.0.1:8090`, panel: `/admin/`. Kontener ma `restart: unless-stopped`,
+więc wstaje po restarcie komputera; zatrzymuje go `... stop` lub `... down`.
+Dane (SQLite + media) trzymane są w `local-data/` poza gitem.
+
 ## Struktura
 
 - `oferty/` — jedyna aplikacja: modele, widoki, filtry, admin, sitemapy

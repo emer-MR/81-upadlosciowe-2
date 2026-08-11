@@ -35,6 +35,14 @@ bez wyraźnej decyzji). Referencyjny klon starego repo: `~/repos/_ref-55-upadlos
 - Kontener prod-like: `docker compose -f docker-compose.local.yml up -d --build`
   → `http://127.0.0.1:8090` (env z `.env.docker-local`, dane w `local-data/`).
   Po zmianie szablonów/statyków konieczny `--build` (collectstatic jest w obrazie).
+- Kontener ma `restart: unless-stopped`, więc po restarcie komputera wstaje sam
+  (usługa `docker` jest `enabled`). Zatrzymuje się dopiero po jawnym
+  `docker compose -f docker-compose.local.yml stop` (albo `down`).
+- **Po `/catchup` w tym projekcie:** sprawdź, czy środowisko testowe odpowiada
+  (`curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090/oferty/`).
+  Jeśli nie — **zapytaj Michała o zgodę** i dopiero po potwierdzeniu podnieś je:
+  `docker compose -f docker-compose.local.yml up -d` (z `--build`, gdy doszły zmiany
+  w kodzie/szablonach). Nie uruchamiaj automatycznie bez pytania.
 - Dane demo: `manage.py seed_demo [--clear]` (7 ofert, zdjęcia, PDF, druga edycja).
 - Do diagnozy problemów widocznych tylko w przeglądarce jest Playwright w `.venv`
   (chromium pobrany lokalnie) — tak wykryto zwężenie edytora Quill w adminie.

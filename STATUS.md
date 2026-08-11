@@ -27,7 +27,8 @@ Etap 5 (deploy na VPS) **świadomie wstrzymany** — decyzja Michała 2026-08-11
 - **Kontener testowy** — `docker-compose.local.yml` (gunicorn, `DEBUG=False`, whitenoise,
   `127.0.0.1:8090`), dane w `local-data/` (gitignored). Konto do panelu w tej lokalnej bazie:
   `michal` / `lokalny-test-2026` (tylko kontener testowy; na prod zakładamy osobne konto).
-  Start po restarcie maszyny: `docker compose -f docker-compose.local.yml up -d`.
+  Kontener ma `restart: unless-stopped` — po restarcie komputera wstaje sam, nie trzeba nic
+  uruchamiać ręcznie. Zatrzymanie: `docker compose -f docker-compose.local.yml stop`.
 - **Dane demo** — komenda `python manage.py seed_demo [--clear]`: 7 ofert (różne kategorie, tryby,
   terminy, oferta bez ceny liczbowej, archiwalna, druga edycja) z generowanymi zdjęciami i PDF-em.
 
