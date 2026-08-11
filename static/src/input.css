@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-bold tracking-tightest leading-tight;
+  }
+  a {
+    @apply transition-colors duration-150;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 bg-accent text-white font-semibold rounded hover:bg-accent-soft transition-colors;
+  }
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 bg-ink text-bg font-semibold rounded hover:opacity-90 transition;
+  }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 border border-border text-ink font-semibold rounded hover:bg-surface2 transition;
+  }
+  .eyebrow {
+    @apply text-[11px] tracking-widest uppercase text-accent font-bold;
+  }
+  .container-narrow {
+    @apply max-w-narrow mx-auto px-4 lg:px-8;
+  }
+  .container-wide {
+    @apply max-w-screen-xl mx-auto px-4 lg:px-8;
+  }
+  .container-prose {
+    @apply max-w-prose mx-auto px-4 lg:px-6;
+  }
+  .nav-link {
+    @apply text-ink-muted hover:text-ink text-sm font-medium pb-1 border-b-2 border-transparent transition-colors;
+  }
+  .nav-link.is-active {
+    @apply text-ink border-accent;
+  }
+  .meta-label {
+    @apply text-[10px] uppercase tracking-wider text-ink-subtle font-semibold;
+  }
+  .chip {
+    @apply inline-flex items-center px-3 py-1 text-xs rounded-full bg-surface2 border border-border text-ink-muted hover:bg-accent-bg hover:text-accent hover:border-accent transition;
+  }
+  .form-input,
+  .form-select,
+  .form-textarea {
+    @apply w-full px-4 py-2.5 bg-surface border border-border rounded text-ink placeholder:text-ink-subtle focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition;
+  }
+  [x-cloak] {
+    display: none !important;
+  }
+  /* Countdown do końca terminu oferty (JS w base.html) */
+  .countdown-urgent {
+    @apply text-hot font-semibold;
+  }
+  .countdown-expired {
+    @apply text-ink-subtle;
+  }
+}
+
+/* Klasy formatowania z edytora wizualnego (Quill) - treść renderowana publicznie */
+.ql-align-center { text-align: center; }
+.ql-align-right { text-align: right; }
+.ql-align-justify { text-align: justify; }
+.ql-indent-1 { padding-left: 3em; }
+.ql-indent-2 { padding-left: 6em; }
+.ql-indent-3 { padding-left: 9em; }
+.ql-indent-4 { padding-left: 12em; }
+.ql-indent-5 { padding-left: 15em; }
+.ql-indent-6 { padding-left: 18em; }

@@ -1,0 +1,37 @@
+{% load static %}
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur border-b border-border" x-data="{ open: false }">
+  <div class="container-wide flex items-center justify-between gap-6 py-3 lg:py-4">
+    <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+      <span class="inline-flex w-11 h-11 items-center justify-center rounded-full bg-ink text-bg shrink-0">
+        <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18l3-9 3 6 3-12 3 12 3-6 3 9z"/></svg>
+      </span>
+      <span class="leading-tight">
+        <span class="block text-[19px] font-bold tracking-tightest text-ink">upadlosciowe<span class="text-accent">.pl</span></span>
+        <span class="hidden md:block text-[10px] tracking-widest uppercase text-ink-subtle font-semibold">Sprzedaż z postępowań upadłościowych</span>
+      </span>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-7">
+      <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}is-active{% endif %}">Start</a>
+      <a href="{% url 'oferta_list' %}" class="nav-link {% if '/oferty' in request.path %}is-active{% endif %}">Oferty</a>
+      <a href="{% url 'o_nas' %}" class="nav-link {% if 'o-nas' in request.path %}is-active{% endif %}">O nas</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="{% url 'kontakt' %}" class="btn-primary !py-2 !px-4 text-sm hidden md:inline-flex">Kontakt</a>
+      <button type="button" @click="open = !open" class="lg:hidden p-2 text-ink hover:text-accent" aria-label="Menu">
+        <svg x-show="!open" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg x-show="open" x-cloak class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div x-show="open" x-cloak x-transition class="lg:hidden border-t border-border bg-surface">
+    <nav class="container-wide py-4 flex flex-col gap-1">
+      <a href="{% url 'home' %}" class="block px-2 py-2 text-ink hover:bg-surface2 rounded">Start</a>
+      <a href="{% url 'oferta_list' %}" class="block px-2 py-2 text-ink hover:bg-surface2 rounded">Oferty</a>
+      <a href="{% url 'o_nas' %}" class="block px-2 py-2 text-ink hover:bg-surface2 rounded">O nas</a>
+      <a href="{% url 'kontakt' %}" class="btn-primary !py-2 mt-2 w-full">Kontakt</a>
+    </nav>
+  </div>
+</header>

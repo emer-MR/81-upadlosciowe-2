@@ -1,0 +1,7 @@
+Django>=5.2,<6
+Pillow
+python-decouple
+gunicorn
+whitenoise
+django-ratelimit
+requests

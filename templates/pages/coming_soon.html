@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Witryna w przygotowaniu — upadlosciowe.pl</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-bg text-ink font-sans flex flex-col">
+    <main class="flex-1 flex items-center justify-center px-6 py-16">
+        <div class="max-w-xl w-full text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-ink text-accent mb-8 mx-auto">
+                <svg width="36" height="36" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 1.5L8 4h-4l1.5 8.5h-1l1.5 4h8l1.5-4h-1L16 4h-4l-2-2.5zM10 4l1 1.5L10 7l-1-1.5L10 4z"/>
+                </svg>
+            </div>
+
+            <p class="text-[12px] uppercase tracking-[0.2em] font-semibold text-accent mb-5">
+                Witryna w&nbsp;przygotowaniu
+            </p>
+
+            <h1 class="font-sans font-bold tracking-tightest leading-[1.05] text-[36px] md:text-[48px] text-ink mb-6">
+                upadlosciowe<span class="text-accent">.pl</span>
+            </h1>
+
+            <p class="text-[16px] leading-[1.65] text-ink-muted mb-10">
+                Pracujemy nad uruchomieniem strony z&nbsp;ogłoszeniami o&nbsp;sprzedaży składników masy upadłości. Dziękujemy za&nbsp;cierpliwość.
+            </p>
+
+            <div class="border-y border-border py-8 mb-10">
+                <p class="text-[11px] uppercase tracking-[0.16em] font-semibold text-ink-subtle mb-3">Sprawy pilne</p>
+                <a href="mailto:{{ OPERATOR.email }}" class="inline-block font-sans font-bold tracking-tightest text-[24px] md:text-[28px] text-ink hover:text-accent transition">
+                    {{ OPERATOR.email }}
+                </a>
+                <p class="text-[13px] text-ink-muted mt-3">
+                    Kancelaria syndyka &middot; upadlosciowe.pl
+                </p>
+            </div>
+
+            <p class="text-[11px] uppercase tracking-[0.14em] text-ink-subtle">
+                © {{ current_year|default:"2026" }} upadlosciowe.pl
+            </p>
+        </div>
+    </main>
+</body>
+</html>

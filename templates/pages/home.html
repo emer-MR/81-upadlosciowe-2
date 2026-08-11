@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="container-wide py-16">
+  <p class="eyebrow mb-4">Sprzedaż z postępowań upadłościowych</p>
+  <h1 class="text-3xl md:text-5xl text-ink mb-6 max-w-3xl">Oferty sprzedaży składników masy upadłości</h1>
+  <p class="text-ink-muted max-w-2xl mb-8">Aktualne ogłoszenia publikowane bezpośrednio przez syndyka: nieruchomości, ruchomości, wierzytelności i udziały.</p>
+  <a href="{% url 'oferta_list' %}" class="btn-primary">Zobacz oferty</a>
+</section>
+{% endblock %}

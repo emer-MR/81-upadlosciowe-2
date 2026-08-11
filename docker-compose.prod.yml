@@ -1,0 +1,36 @@
+services:
+  web:
+    build: .
+    container_name: upadlosciowe_web
+    restart: unless-stopped
+    # Tailscale IP:port — fallback dostepu (gdyby Traefik nie dzialal)
+    ports:
+      - "100.86.74.115:8088:8000"
+    env_file:
+      - .env
+    volumes:
+      - /opt/upadlosciowe-portal/data:/app/data
+      - /opt/upadlosciowe-portal/media:/app/media
+      - /opt/upadlosciowe-portal/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/admin/login/')"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    mem_limit: 512m
+    networks:
+      - default
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=root_default"
+      - "traefik.http.routers.upadlosciowe.rule=Host(`upadlosciowe.pl`) || Host(`www.upadlosciowe.pl`)"
+      - "traefik.http.routers.upadlosciowe.entrypoints=websecure"
+      - "traefik.http.routers.upadlosciowe.tls=true"
+      - "traefik.http.routers.upadlosciowe.tls.certresolver=mytlschallenge"
+      - "traefik.http.services.upadlosciowe.loadbalancer.server.port=8000"
+
+networks:
+  traefik:
+    name: root_default
+    external: true

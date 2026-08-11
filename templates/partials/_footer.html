@@ -1,0 +1,39 @@
+{% load static %}
+<footer class="bg-ink text-bg mt-20">
+  <div class="container-wide py-14 grid grid-cols-2 md:grid-cols-3 gap-8">
+    <div class="col-span-2 md:col-span-1">
+      <a href="{% url 'home' %}" class="flex items-center gap-2 mb-4">
+        <span class="inline-flex w-9 h-9 items-center justify-center rounded-full bg-bg/10">
+          <svg class="w-5 h-5 text-accent" viewBox="0 0 24 24" fill="currentColor"><path d="M3 18l3-9 3 6 3-12 3 12 3-6 3 9z"/></svg>
+        </span>
+        <span class="text-[17px] font-bold tracking-tightest">upadlosciowe<span class="text-accent">.pl</span></span>
+      </a>
+      <p class="text-sm text-bg/70 leading-relaxed mb-3">Ogłoszenia o sprzedaży mienia z postępowań upadłościowych, publikowane bezpośrednio przez syndyka.</p>
+    </div>
+
+    <div>
+      <div class="meta-label !text-bg/50 mb-3">Portal</div>
+      <ul class="space-y-2 text-sm">
+        <li><a href="{% url 'oferta_list' %}" class="text-bg/80 hover:text-accent">Wszystkie oferty</a></li>
+        <li><a href="{% url 'o_nas' %}" class="text-bg/80 hover:text-accent">O nas</a></li>
+        <li><a href="{% url 'kontakt' %}" class="text-bg/80 hover:text-accent">Kontakt</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="meta-label !text-bg/50 mb-3">Kontakt</div>
+      <ul class="space-y-2 text-sm">
+        {% if OPERATOR.nazwa %}<li class="text-bg/80">{{ OPERATOR.nazwa }}</li>{% endif %}
+        {% if OPERATOR.adres %}<li class="text-bg/80">{{ OPERATOR.adres }}</li>{% endif %}
+        {% if OPERATOR.telefon %}<li><a href="tel:{{ OPERATOR.telefon|cut:' ' }}" class="text-bg/80 hover:text-accent">{{ OPERATOR.telefon }}</a></li>{% endif %}
+        <li><a href="mailto:{{ OPERATOR.email }}" class="text-bg/80 hover:text-accent">{{ OPERATOR.email }}</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-bg/10">
+    <div class="container-wide py-5 flex flex-col md:flex-row justify-between items-center gap-2 text-xs text-bg/50">
+      <span>© {% now "Y" %} upadlosciowe.pl</span>
+      <span><a href="{% url 'kontakt' %}" class="hover:text-accent">Kontakt</a></span>
+    </div>
+  </div>
+</footer>
