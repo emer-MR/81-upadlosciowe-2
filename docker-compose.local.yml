@@ -1,0 +1,19 @@
+# Lokalny kontener testowy (prod-like: gunicorn, DEBUG=False, whitenoise).
+# Użycie:
+#   cp .env.docker-local.example .env.docker-local   # i ew. edytuj
+#   docker compose -f docker-compose.local.yml up --build
+#   docker compose -f docker-compose.local.yml exec web python manage.py migrate
+#   docker compose -f docker-compose.local.yml exec web python manage.py seed_slowniki
+#   docker compose -f docker-compose.local.yml exec web python manage.py createsuperuser
+# Strona: http://127.0.0.1:8090
+services:
+  web:
+    build: .
+    container_name: upadlosciowe_local
+    ports:
+      - "127.0.0.1:8090:8000"
+    env_file:
+      - .env.docker-local
+    volumes:
+      - ./local-data/data:/app/data
+      - ./local-data/media:/app/media

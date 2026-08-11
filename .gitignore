@@ -16,3 +16,5 @@ backups/
 .vscode/
 sent_emails/
 .bin/
+local-data/
+.env.docker-local
