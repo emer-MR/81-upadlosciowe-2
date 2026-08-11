@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Polityka prywatności — upadlosciowe.pl{% endblock %}
+
+{% block content %}
+<section class="container-prose py-14">
+  <p class="eyebrow mb-3">Informacje</p>
+  <h1 class="text-3xl md:text-4xl text-ink mb-8">Polityka prywatności</h1>
+
+  {# TODO: docelowa treść prawna od Michała (Etap 6). Szkielet informacyjny. #}
+  <div class="prose prose-sm sm:prose-base max-w-none text-ink leading-relaxed space-y-4">
+    <h2>Administrator danych</h2>
+    <p>Administratorem danych osobowych jest {{ OPERATOR.nazwa }}{% if OPERATOR.adres %}, {{ OPERATOR.adres }}{% endif %}.
+       Kontakt: <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a>.</p>
+    <h2>Zakres i cel przetwarzania</h2>
+    <p>Dane podane w formularzu kontaktowym (imię, adres e-mail, treść wiadomości) przetwarzamy
+       wyłącznie w celu udzielenia odpowiedzi na przesłaną wiadomość.</p>
+    <h2>Pliki cookies</h2>
+    <p>Serwis używa wyłącznie niezbędnych plików cookies (sesja, zabezpieczenie CSRF).
+       Nie prowadzimy śledzenia ani profilowania użytkowników.</p>
+    <h2>Prawa osób, których dane dotyczą</h2>
+    <p>Przysługuje Ci prawo dostępu do danych, ich sprostowania, usunięcia oraz ograniczenia
+       przetwarzania, a także prawo wniesienia skargi do Prezesa UODO.</p>
+  </div>
+</section>
+{% endblock %}

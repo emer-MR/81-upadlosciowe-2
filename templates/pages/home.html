@@ -1,10 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
-<section class="container-wide py-16">
-  <p class="eyebrow mb-4">Sprzedaż z postępowań upadłościowych</p>
-  <h1 class="text-3xl md:text-5xl text-ink mb-6 max-w-3xl">Oferty sprzedaży składników masy upadłości</h1>
-  <p class="text-ink-muted max-w-2xl mb-8">Aktualne ogłoszenia publikowane bezpośrednio przez syndyka: nieruchomości, ruchomości, wierzytelności i udziały.</p>
-  <a href="{% url 'oferta_list' %}" class="btn-primary">Zobacz oferty</a>
+<section class="bg-surface border-b border-border">
+  <div class="container-wide py-16 lg:py-24">
+    <p class="eyebrow mb-4">Sprzedaż z postępowań upadłościowych</p>
+    <h1 class="text-4xl md:text-5xl text-ink mb-6 max-w-3xl">Oferty sprzedaży składników masy upadłości</h1>
+    <p class="text-lg text-ink-muted max-w-2xl mb-8 leading-relaxed">
+      Aktualne ogłoszenia publikowane bezpośrednio przez syndyka: nieruchomości, ruchomości,
+      wierzytelności i udziały — z pełną dokumentacją i jasno opisanym trybem zakupu.
+    </p>
+    <div class="flex flex-wrap gap-3">
+      <a href="{% url 'oferta_list' %}" class="btn-primary">Zobacz wszystkie oferty</a>
+      <a href="{% url 'o_nas' %}" class="btn-outline">O nas</a>
+    </div>
+  </div>
+</section>
+
+{% if najnowsze %}
+<section class="container-wide py-14">
+  <div class="flex items-end justify-between mb-6">
+    <h2 class="text-2xl font-bold text-ink">Najnowsze oferty</h2>
+    <a href="{% url 'oferta_list' %}" class="text-sm font-semibold text-accent hover:underline">Wszystkie oferty →</a>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    {% for og in najnowsze %}
+      {% include "_components/_card_listing.html" with og=og %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="container-wide py-14">
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="bg-surface border border-border rounded p-6 shadow-card">
+      <div class="eyebrow mb-2">Bezpośrednio od syndyka</div>
+      <p class="text-sm text-ink-muted leading-relaxed">Ogłoszenia publikuje biuro syndyka prowadzące postępowanie — bez pośredników i prowizji.</p>
+    </div>
+    <div class="bg-surface border border-border rounded p-6 shadow-card">
+      <div class="eyebrow mb-2">Pełna dokumentacja</div>
+      <p class="text-sm text-ink-muted leading-relaxed">Przy każdej ofercie regulamin sprzedaży i dokumenty do pobrania oraz jasno opisany tryb zakupu.</p>
+    </div>
+    <div class="bg-surface border border-border rounded p-6 shadow-card">
+      <div class="eyebrow mb-2">Aktualne terminy</div>
+      <p class="text-sm text-ink-muted leading-relaxed">Każda oferta pokazuje termin składania ofert i odliczanie do jego upływu.</p>
+    </div>
+  </div>
 </section>
 {% endblock %}

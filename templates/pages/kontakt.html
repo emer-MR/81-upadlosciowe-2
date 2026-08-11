@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Kontakt — upadlosciowe.pl{% endblock %}
+
+{% block content %}
+<section class="container-wide py-14">
+  <p class="eyebrow mb-3">Kontakt</p>
+  <h1 class="text-3xl md:text-4xl text-ink mb-10">Napisz do nas</h1>
+
+  <div class="grid md:grid-cols-2 gap-10 max-w-4xl">
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
+      {{ form.website }}
+      <div>
+        <label for="{{ form.imie.id_for_label }}" class="block text-sm font-semibold text-ink mb-1.5">{{ form.imie.label }}</label>
+        {{ form.imie }}
+        {% for e in form.imie.errors %}<p class="text-xs text-hot mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-ink mb-1.5">{{ form.email.label }}</label>
+        {{ form.email }}
+        {% for e in form.email.errors %}<p class="text-xs text-hot mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label for="{{ form.wiadomosc.id_for_label }}" class="block text-sm font-semibold text-ink mb-1.5">{{ form.wiadomosc.label }}</label>
+        {{ form.wiadomosc }}
+        {% for e in form.wiadomosc.errors %}<p class="text-xs text-hot mt-1">{{ e }}</p>{% endfor %}
+      </div>
+      {% if TURNSTILE_SITE_KEY %}
+        <div class="cf-turnstile" data-sitekey="{{ TURNSTILE_SITE_KEY }}"></div>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+      {% endif %}
+      <button type="submit" class="btn-primary">Wyślij wiadomość</button>
+      <p class="text-xs text-ink-subtle leading-relaxed">
+        Administratorem danych osobowych podanych w formularzu jest {{ OPERATOR.nazwa }}.
+        Dane przetwarzamy wyłącznie w celu odpowiedzi na wiadomość.
+      </p>
+    </form>
+
+    <div class="space-y-6">
+      <div class="bg-surface border border-border rounded p-6 shadow-card">
+        <h2 class="text-base font-bold text-ink mb-4">Dane biura</h2>
+        <div class="text-sm text-ink leading-relaxed space-y-1">
+          {% if OPERATOR.nazwa %}<div class="font-semibold">{{ OPERATOR.nazwa }}</div>{% endif %}
+          {% if OPERATOR.adres %}<div>{{ OPERATOR.adres }}</div>{% endif %}
+          {% if OPERATOR.telefon %}<div><a href="tel:{{ OPERATOR.telefon|cut:' ' }}" class="text-accent hover:underline">{{ OPERATOR.telefon }}</a></div>{% endif %}
+          <div><a href="mailto:{{ OPERATOR.email }}" class="text-accent hover:underline">{{ OPERATOR.email }}</a></div>
+        </div>
+      </div>
+      <div class="bg-surface2 border border-border rounded p-6">
+        <p class="text-sm text-ink-muted leading-relaxed">
+          Pytania o konkretną ofertę najlepiej kierować na dane kontaktowe wskazane
+          na stronie tej oferty — trafią wtedy bezpośrednio do właściwego postępowania.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

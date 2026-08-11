@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}O nas — upadlosciowe.pl{% endblock %}
+
+{% block content %}
+<section class="container-prose py-14">
+  <p class="eyebrow mb-3">O nas</p>
+  <h1 class="text-3xl md:text-4xl text-ink mb-8">{{ OPERATOR.nazwa }}</h1>
+
+  {# TODO: docelowa treść od Michała (Etap 6). Poniżej neutralny tekst startowy. #}
+  <div class="prose prose-sm sm:prose-base max-w-none text-ink leading-relaxed space-y-4">
+    <p>
+      Prowadzimy postępowania upadłościowe i publikujemy na tej stronie ogłoszenia o sprzedaży
+      składników masy upadłości. Wszystkie oferty pochodzą bezpośrednio z postępowań, które
+      prowadzimy jako syndyk.
+    </p>
+    <p>
+      Zależy nam na przejrzystości: przy każdej ofercie znajdziesz pełną dokumentację,
+      jasno opisany tryb zakupu oraz termin składania ofert.
+    </p>
+  </div>
+
+  <div class="mt-10 bg-surface border border-border rounded p-6 shadow-card">
+    <h2 class="text-base font-bold text-ink mb-4">Dane kontaktowe</h2>
+    <div class="text-sm text-ink leading-relaxed space-y-1">
+      {% if OPERATOR.nazwa %}<div class="font-semibold">{{ OPERATOR.nazwa }}</div>{% endif %}
+      {% if OPERATOR.adres %}<div>{{ OPERATOR.adres }}</div>{% endif %}
+      {% if OPERATOR.telefon %}<div><a href="tel:{{ OPERATOR.telefon|cut:' ' }}" class="text-accent hover:underline">{{ OPERATOR.telefon }}</a></div>{% endif %}
+      <div><a href="mailto:{{ OPERATOR.email }}" class="text-accent hover:underline">{{ OPERATOR.email }}</a></div>
+      {% if OPERATOR.nip %}<div>NIP: {{ OPERATOR.nip }}</div>{% endif %}
+      {% if OPERATOR.krs %}<div>KRS: {{ OPERATOR.krs }}</div>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

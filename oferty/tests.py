@@ -82,6 +82,24 @@ class OgloszenieTests(TestCase):
         self.assertContains(r, 'archiwaln')
         self.assertContains(r, 'noindex')
 
+    def test_home_i_strony_statyczne(self):
+        nowa_oferta(self.kat, slug='na-home', tytul='Oferta na home')
+        r = self.client.get('/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Oferta na home')
+        for url in ['/o-nas/', '/kontakt/', '/polityka-prywatnosci/', '/robots.txt', '/sitemap.xml']:
+            self.assertEqual(self.client.get(url).status_code, 200, url)
+
+    def test_kontakt_formularz_i_honeypot(self):
+        dane = {'imie': 'Jan', 'email': 'jan@example.com', 'wiadomosc': 'Dzień dobry'}
+        r = self.client.post('/kontakt/', dane, follow=True)
+        self.assertContains(r, 'Wiadomość wysłana')
+        from .models import WiadomoscKontakt
+        self.assertEqual(WiadomoscKontakt.objects.count(), 1)
+        r = self.client.post('/kontakt/', {**dane, 'website': 'http://spam'}, follow=True)
+        self.assertContains(r, 'Wykryto bota')
+        self.assertEqual(WiadomoscKontakt.objects.count(), 1)
+
     def test_najnowsza_edycja(self):
         root = nowa_oferta(self.kat, slug='dom', edycja=1)
         ed2 = nowa_oferta(self.kat, slug='dom-ed-2', edycja=2, parent=root)
