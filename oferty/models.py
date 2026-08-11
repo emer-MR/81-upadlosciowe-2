@@ -149,6 +149,14 @@ class Ogloszenie(TimestampedModel):
         if not self.id_publiczny:
             self.id_publiczny = _nastepny_kod(self.kategoria)
         super().save(*args, **kwargs)
+        # Publikacja kolejnej edycji zastępuje poprzednie: te same przedmiot i przetarg,
+        # więc starsze edycje schodzą z listy (link dalej działa, z bannerem).
+        if self.status == 'opublikowane' and (self.parent_id or self.edycja > 1):
+            root_id = self.parent_id or self.pk
+            (Ogloszenie.objects
+             .filter(models.Q(pk=root_id) | models.Q(parent_id=root_id))
+             .filter(status='opublikowane', edycja__lt=self.edycja)
+             .update(status='zarchiwizowane'))
 
     def get_absolute_url(self):
         return reverse('oferta_detail', args=[self.slug])

@@ -105,7 +105,7 @@
               <span class="inline-flex items-center justify-center w-10 h-10 rounded bg-surface2 border border-border text-[10px] font-bold text-ink-muted shrink-0">{{ z.rozszerzenie }}</span>
               <span class="min-w-0">
                 <span class="block text-sm font-semibold text-ink group-hover:text-accent truncate">{{ z.nazwa }}</span>
-                <span class="block text-xs text-ink-subtle">{{ z.rozmiar_kb }} KB</span>
+                <span class="block text-xs text-ink-subtle">{% if z.rozmiar_kb %}{{ z.rozmiar_kb }} KB{% else %}&lt; 1 KB{% endif %}</span>
               </span>
             </a>
           </li>

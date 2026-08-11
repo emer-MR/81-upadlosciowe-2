@@ -1,9 +1,13 @@
 {# usage: {% include "_components/_tryb_badge.html" with og=og floating=True %} #}
+{# floating = badge na zdjęciu: nieprzezroczyste tło, żeby był czytelny na każdym kadrze #}
 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide rounded
-  {% if og.tryb == 'elektroniczny' %}bg-info/10 text-info border border-info/20
-  {% elif og.tryb == 'z_wolnej_reki' %}bg-success/10 text-success border border-success/20
-  {% else %}bg-surface2 text-ink-muted border border-border{% endif %}
-  {% if floating %} absolute top-3 right-3 backdrop-blur-sm{% endif %}">
+  {% if floating %}absolute top-3 right-3 bg-white/95 backdrop-blur-sm border border-black/5
+    {% if og.tryb == 'elektroniczny' %}text-info{% elif og.tryb == 'z_wolnej_reki' %}text-success{% else %}text-ink-muted{% endif %}
+  {% else %}
+    {% if og.tryb == 'elektroniczny' %}bg-info/10 text-info border border-info/20
+    {% elif og.tryb == 'z_wolnej_reki' %}bg-success/10 text-success border border-success/20
+    {% else %}bg-surface2 text-ink-muted border border-border{% endif %}
+  {% endif %}">
   <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
   {{ og.tryb_short }}
 </span>

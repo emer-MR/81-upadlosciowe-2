@@ -71,6 +71,23 @@ class OgloszenieTests(TestCase):
         r = self.client.get(f'/{o.id_publiczny}')
         self.assertRedirects(r, '/oferty/dom-testowy/')
 
+    def test_publikacja_nowej_edycji_archiwizuje_poprzednie(self):
+        root = nowa_oferta(self.kat, slug='hala-a', tytul='Hala')
+        ed2 = nowa_oferta(self.kat, slug='hala-a-ed-2', tytul='Hala', parent=root, edycja=2)
+        root.refresh_from_db()
+        self.assertEqual(root.status, 'zarchiwizowane')
+        self.assertEqual(ed2.status, 'opublikowane')
+        slugi = set(Ogloszenie.objects.opublikowane().values_list('slug', flat=True))
+        self.assertEqual(slugi, {'hala-a-ed-2'})
+
+    def test_podobne_pomijaja_inne_edycje_tej_samej_oferty(self):
+        root = nowa_oferta(self.kat, slug='hala', tytul='Hala produkcyjna')
+        nowa_oferta(self.kat, slug='hala-ed-2', tytul='Hala produkcyjna', parent=root, edycja=2)
+        inna = nowa_oferta(self.kat, slug='inna-oferta', tytul='Zupełnie inna oferta')
+        r = self.client.get('/oferty/hala-ed-2/')
+        podobne = [o.slug for o in r.context['podobne']]
+        self.assertEqual(podobne, [inna.slug])
+
     def test_szkic_niewidoczny_publicznie(self):
         nowa_oferta(self.kat, slug='szkic-y', status='szkic')
         self.assertEqual(self.client.get('/oferty/szkic-y/').status_code, 404)

@@ -96,10 +96,15 @@ class OfertaDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         o = self.object
+        # Inne edycje tego samego przetargu to nie są "podobne oferty" — pomijamy
+        # całe drzewo edycji bieżącej oferty (korzeń i rodzeństwo).
+        root_id = o.parent_id or o.pk
         ctx['podobne'] = (
             Ogloszenie.objects.opublikowane()
             .filter(kategoria=o.kategoria)
             .exclude(pk=o.pk)
+            .exclude(pk=root_id)
+            .exclude(parent_id=root_id)
             .select_related('kategoria', 'wojewodztwo')
             .prefetch_related('zdjecia')[:3]
         )
