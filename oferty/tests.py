@@ -48,6 +48,40 @@ class OgloszenieTests(TestCase):
         slugi = set(Ogloszenie.objects.opublikowane().values_list('slug', flat=True))
         self.assertEqual(slugi, {'widoczna'})
 
+    def test_lista_i_filtry(self):
+        nowa_oferta(self.kat, slug='mieszkanie-lodz', tytul='Mieszkanie w Łodzi', miejscowosc='Łódź', wojewodztwo=self.woj, cena=100)
+        nowa_oferta(self.kat, slug='szkic-x', status='szkic')
+        r = self.client.get('/oferty/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'mieszkanie-lodz')
+        self.assertNotContains(r, 'szkic-x')
+        # Uwaga: SQLite case-folduje w icontains tylko ASCII ('łodzi' nie znajdzie 'Łodzi').
+        r = self.client.get('/oferty/?q=mieszkanie')
+        self.assertContains(r, 'mieszkanie-lodz')
+        r = self.client.get('/oferty/?wojewodztwo=maz')
+        self.assertNotContains(r, 'mieszkanie-lodz')
+
+    def test_detal_krotki_link_i_licznik(self):
+        o = nowa_oferta(self.kat, slug='dom-testowy', tytul='Dom testowy')
+        r = self.client.get('/oferty/dom-testowy/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'Dom testowy')
+        o.refresh_from_db()
+        self.assertEqual(o.liczba_wyswietlen, 1)
+        r = self.client.get(f'/{o.id_publiczny}')
+        self.assertRedirects(r, '/oferty/dom-testowy/')
+
+    def test_szkic_niewidoczny_publicznie(self):
+        nowa_oferta(self.kat, slug='szkic-y', status='szkic')
+        self.assertEqual(self.client.get('/oferty/szkic-y/').status_code, 404)
+
+    def test_zarchiwizowane_dostepne_z_bannerem(self):
+        nowa_oferta(self.kat, slug='stare', status='zarchiwizowane')
+        r = self.client.get('/oferty/stare/')
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'archiwaln')
+        self.assertContains(r, 'noindex')
+
     def test_najnowsza_edycja(self):
         root = nowa_oferta(self.kat, slug='dom', edycja=1)
         ed2 = nowa_oferta(self.kat, slug='dom-ed-2', edycja=2, parent=root)

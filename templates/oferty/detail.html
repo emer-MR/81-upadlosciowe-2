@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load oferty_extras %}
+{% block title %}{{ og.tytul }} — upadlosciowe.pl{% endblock %}
+{% block meta_description %}{{ og.opis_krotki|default:og.tytul }}{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block og_title %}{{ og.tytul }}{% endblock %}
+{% block og_description %}{{ og.opis_krotki|default:og.tytul }}{% endblock %}
+{% block og_image %}{% if og.display_img_watermark %}<meta property="og:image" content="{% absurl og.display_img_watermark %}">{% endif %}{% endblock %}
+{% block head_extra %}{% if og.status != 'opublikowane' %}<meta name="robots" content="noindex">{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-wide py-8 lg:py-12" x-data="{ lightbox: null }">
+
+  <a href="{% url 'oferta_list' %}" class="inline-flex items-center gap-2 text-sm text-ink-muted hover:text-accent mb-6">
+    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+    Wszystkie oferty
+  </a>
+
+  {% if nowsza_edycja %}
+    <div class="mb-6 px-4 py-3 rounded border bg-accent-bg border-accent/30 text-ink flex flex-wrap items-center gap-2">
+      <span class="font-semibold">Dostępna jest nowsza edycja tego ogłoszenia.</span>
+      <a href="{{ nowsza_edycja.get_absolute_url }}" class="text-accent font-semibold hover:underline">Przejdź do aktualnej oferty →</a>
+    </div>
+  {% elif og.status == 'zarchiwizowane' %}
+    <div class="mb-6 px-4 py-3 rounded border bg-surface2 border-border text-ink-muted">
+      To ogłoszenie zostało zakończone i ma charakter archiwalny.
+    </div>
+  {% elif og.status == 'szkic' %}
+    <div class="mb-6 px-4 py-3 rounded border bg-surface2 border-border text-ink-muted">
+      Podgląd szkicu — oferta nie jest widoczna publicznie.
+    </div>
+  {% endif %}
+
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <span class="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider bg-surface2 border border-border rounded text-ink">{{ og.kategoria.nazwa }}</span>
+    {% include "_components/_tryb_badge.html" with og=og %}
+    <span class="text-[11px] uppercase tracking-wider font-semibold text-ink-subtle">Kod: {{ og.id_publiczny }}</span>
+    {% if og.edycja > 1 %}<span class="text-[11px] uppercase tracking-wider font-semibold text-ink-subtle">Edycja {{ og.edycja }}</span>{% endif %}
+  </div>
+
+  <h1 class="text-3xl md:text-4xl font-bold tracking-tightest text-ink mb-4 max-w-4xl">{{ og.tytul }}</h1>
+
+  <div class="flex flex-wrap items-end gap-x-8 gap-y-4 mb-8 pb-8 border-b border-border">
+    <div>
+      <div class="meta-label mb-1">Cena wywoławcza</div>
+      <div class="text-3xl font-bold tracking-tightest text-ink">
+        {% if og.cena_tekst %}{{ og.cena_tekst }}{% elif og.cena is not None %}{{ og.cena|pln }} <span class="text-base font-semibold text-ink-subtle">{{ og.cena_typ }}</span>{% else %}—{% endif %}
+      </div>
+      {% if og.wadium %}<div class="text-sm text-ink-muted mt-1">Wadium: <span class="font-semibold">{{ og.wadium|pln }}</span></div>{% endif %}
+    </div>
+    {% if og.miejscowosc or og.wojewodztwo %}
+    <div>
+      <div class="meta-label mb-1">Lokalizacja</div>
+      <div class="text-lg font-semibold text-ink">{{ og.miejscowosc }}{% if og.miejscowosc and og.wojewodztwo %}, {% endif %}{% if og.wojewodztwo %}{{ og.wojewodztwo.nazwa }}{% endif %}</div>
+    </div>
+    {% endif %}
+    {% if og.wygasa %}
+    <div>
+      <div class="meta-label mb-1">Termin składania ofert</div>
+      <div class="text-lg font-semibold text-ink">{{ og.wygasa|date:"d.m.Y, H:i" }}</div>
+      <div class="text-sm font-semibold text-ink-muted" data-wygasa="{{ og.wygasa|date:'c' }}"></div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    <div class="lg:col-span-2 space-y-10">
+
+      {% if og.zdjecia.all %}
+      <section>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {% for z in og.zdjecia.all %}
+            {% if z.display_img_watermark %}
+            <button type="button" @click="lightbox = '{{ z.display_img_watermark }}'"
+                    class="relative aspect-[4/3] overflow-hidden rounded bg-surface2 border border-border hover:opacity-90 transition {% if forloop.first %}col-span-2 row-span-2 md:col-span-2{% endif %}">
+              <img src="{{ z.display_img_watermark }}" alt="{{ og.tytul }} — zdjęcie {{ forloop.counter }}" loading="lazy" class="w-full h-full object-cover">
+            </button>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <section>
+        <h2 class="text-xl font-bold text-ink mb-4">Opis</h2>
+        <div class="prose prose-sm sm:prose-base max-w-none text-ink leading-relaxed">{{ og.opis|render_rich }}</div>
+      </section>
+
+      {% if og.jak_kupic %}
+      <section>
+        <h2 class="text-xl font-bold text-ink mb-4">Tryb zakupu</h2>
+        <div class="prose prose-sm sm:prose-base max-w-none text-ink leading-relaxed">{{ og.jak_kupic|render_rich }}</div>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="space-y-8">
+      {% if og.zalaczniki.all %}
+      <section class="bg-surface border border-border rounded p-5 shadow-card">
+        <h2 class="text-base font-bold text-ink mb-4">Pliki do pobrania</h2>
+        <ul class="space-y-3">
+          {% for z in og.zalaczniki.all %}
+          <li>
+            <a href="{{ z.plik.url }}" target="_blank" rel="noopener" class="flex items-center gap-3 group">
+              <span class="inline-flex items-center justify-center w-10 h-10 rounded bg-surface2 border border-border text-[10px] font-bold text-ink-muted shrink-0">{{ z.rozszerzenie }}</span>
+              <span class="min-w-0">
+                <span class="block text-sm font-semibold text-ink group-hover:text-accent truncate">{{ z.nazwa }}</span>
+                <span class="block text-xs text-ink-subtle">{{ z.rozmiar_kb }} KB</span>
+              </span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <section class="bg-surface border border-border rounded p-5 shadow-card">
+        <h2 class="text-base font-bold text-ink mb-4">Kontakt w sprawie oferty</h2>
+        {% if kontakt_wlasny %}
+          <div class="text-sm text-ink leading-relaxed whitespace-pre-line">{{ kontakt_wlasny }}</div>
+        {% else %}
+          <div class="text-sm text-ink leading-relaxed space-y-1">
+            {% if OPERATOR.nazwa %}<div class="font-semibold">{{ OPERATOR.nazwa }}</div>{% endif %}
+            {% if OPERATOR.adres %}<div>{{ OPERATOR.adres }}</div>{% endif %}
+            {% if OPERATOR.telefon %}<div><a href="tel:{{ OPERATOR.telefon|cut:' ' }}" class="text-accent hover:underline">{{ OPERATOR.telefon }}</a></div>{% endif %}
+            <div><a href="mailto:{{ OPERATOR.email }}" class="text-accent hover:underline">{{ OPERATOR.email }}</a></div>
+          </div>
+        {% endif %}
+      </section>
+
+      {% if og.sygnatura or og.sad or og.upadly %}
+      <section class="bg-surface border border-border rounded p-5 shadow-card">
+        <h2 class="text-base font-bold text-ink mb-4">Postępowanie</h2>
+        <dl class="text-sm space-y-2">
+          {% if og.sygnatura %}<div><dt class="meta-label">Sygnatura</dt><dd class="text-ink font-semibold">{{ og.sygnatura }}</dd></div>{% endif %}
+          {% if og.sad %}<div><dt class="meta-label">Sąd</dt><dd class="text-ink">{{ og.sad }}</dd></div>{% endif %}
+          {% if og.upadly %}<div><dt class="meta-label">Upadły</dt><dd class="text-ink">{{ og.upadly }}</dd></div>{% endif %}
+        </dl>
+      </section>
+      {% endif %}
+    </aside>
+  </div>
+
+  {% if podobne %}
+  <section class="mt-16">
+    <h2 class="text-xl font-bold text-ink mb-6">Podobne oferty</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {% for p in podobne %}
+        {% include "_components/_card_listing.html" with og=p %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# Lightbox #}
+  <div x-show="lightbox" x-cloak @click="lightbox = null" @keydown.escape.window="lightbox = null"
+       class="fixed inset-0 z-50 bg-ink/90 flex items-center justify-center p-6 cursor-zoom-out">
+    <img :src="lightbox" class="max-w-full max-h-full rounded shadow-lg" alt="{{ og.tytul }}">
+    <button type="button" class="absolute top-5 right-5 text-bg hover:text-accent" aria-label="Zamknij">
+      <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<script type="application/ld+json">{{ jsonld_data|jsonld }}</script>
+{% endblock %}

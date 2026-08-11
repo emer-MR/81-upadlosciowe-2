@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load oferty_extras %}
+{% block title %}Oferty sprzedaży z postępowań upadłościowych — upadlosciowe.pl{% endblock %}
+{% block meta_description %}Aktualne oferty sprzedaży mienia z postępowań upadłościowych: nieruchomości, ruchomości, wierzytelności, udziały. Ogłoszenia publikowane bezpośrednio przez syndyka.{% endblock %}
+
+{% block content %}
+<section class="bg-surface border-b border-border">
+  <div class="container-wide py-10 lg:py-14">
+    <div class="eyebrow mb-3">Oferty sprzedaży</div>
+    <h1 class="text-3xl md:text-4xl font-bold tracking-tightest text-ink mb-3">
+      {{ paginator.count }} {% if paginator.count == 1 %}aktualna oferta{% elif paginator.count < 5 %}aktualne oferty{% else %}aktualnych ofert{% endif %}
+    </h1>
+    <p class="text-base text-ink-muted max-w-3xl leading-relaxed">
+      Ogłoszenia o sprzedaży składników masy upadłości, publikowane bezpośrednio przez syndyka.
+    </p>
+  </div>
+</section>
+
+<section class="sticky top-[64px] lg:top-[76px] z-30 bg-surface/95 backdrop-blur border-b border-border">
+  <div class="container-wide py-3 space-y-3">
+    {# Pigułki kategorii #}
+    <div class="flex gap-2 overflow-x-auto pb-1 -mb-1">
+      <a href="?{% query_replace request kategoria='' page='' %}"
+         class="chip whitespace-nowrap {% if not filters.kategoria %}!bg-ink !text-bg !border-ink{% endif %}">Wszystkie</a>
+      {% for k in kategorie %}
+        <a href="?{% query_replace request kategoria=k.slug page='' %}"
+           class="chip whitespace-nowrap {% if filters.kategoria == k.slug %}!bg-ink !text-bg !border-ink{% endif %}">{{ k.nazwa }}</a>
+      {% endfor %}
+    </div>
+
+    <form method="get" class="flex flex-wrap items-center gap-3">
+      {% if filters.kategoria %}<input type="hidden" name="kategoria" value="{{ filters.kategoria }}">{% endif %}
+      <input type="search" name="q" value="{{ filters.q|default:'' }}" placeholder="Szukaj po tytule, miejscowości, upadłym..." class="form-input !py-2 flex-1 min-w-[220px] text-sm">
+
+      <select name="wojewodztwo" class="form-select !py-2 text-sm" onchange="this.form.submit()">
+        <option value="">Cała Polska</option>
+        {% for w in wojewodztwa %}
+          <option value="{{ w.kod }}" {% if filters.wojewodztwo == w.kod %}selected{% endif %}>{{ w.nazwa }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="tryb" class="form-select !py-2 text-sm" onchange="this.form.submit()">
+        <option value="">Każdy tryb</option>
+        {% for val, label in tryby %}
+          <option value="{{ val }}" {% if filters.tryb == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+
+      <select name="sort" class="form-select !py-2 text-sm" onchange="this.form.submit()">
+        {% with current=filters.sort|default:'newest' %}
+        <option value="newest" {% if current == 'newest' %}selected{% endif %}>Najnowsze</option>
+        <option value="cena_asc" {% if current == 'cena_asc' %}selected{% endif %}>Cena rosnąco</option>
+        <option value="cena_desc" {% if current == 'cena_desc' %}selected{% endif %}>Cena malejąco</option>
+        <option value="konczace" {% if current == 'konczace' %}selected{% endif %}>Kończące się</option>
+        {% endwith %}
+      </select>
+
+      <button type="submit" class="btn-primary !py-2 text-sm">Filtruj</button>
+      {% if filters.q or filters.kategoria or filters.wojewodztwo or filters.tryb %}
+        <a href="{% url 'oferta_list' %}" class="text-sm text-ink-muted hover:text-accent">Wyczyść</a>
+      {% endif %}
+    </form>
+  </div>
+</section>
+
+<section class="container-wide py-12">
+  {% if oferty %}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {% for og in oferty %}
+        {% include "_components/_card_listing.html" with og=og %}
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+      <div class="mt-12 flex justify-center items-center gap-2">
+        {% if page_obj.has_previous %}
+          <a href="?{% query_replace request page=page_obj.previous_page_number %}" class="btn-outline !py-2 !px-4 text-sm">← Poprzednia</a>
+        {% endif %}
+        <span class="text-sm text-ink-muted px-4">Strona {{ page_obj.number }} z {{ paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?{% query_replace request page=page_obj.next_page_number %}" class="btn-outline !py-2 !px-4 text-sm">Następna →</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="text-center py-20">
+      <div class="text-6xl mb-4 text-ink-subtle">∅</div>
+      <h3 class="text-2xl font-bold text-ink mb-2">Brak ofert</h3>
+      <p class="text-ink-muted mb-6">{% if filters.q or filters.kategoria or filters.wojewodztwo or filters.tryb %}Spróbuj zmienić filtry lub <a href="{% url 'oferta_list' %}" class="text-accent hover:underline">wyczyść wszystkie</a>.{% else %}Aktualnie nie ma opublikowanych ofert — zajrzyj wkrótce.{% endif %}</p>
+    </div>
+  {% endif %}
+</section>
+
+<script type="application/ld+json">{{ jsonld_data|jsonld }}</script>
+{% endblock %}

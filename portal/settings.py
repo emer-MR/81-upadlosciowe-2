@@ -1,5 +1,6 @@
 """Django settings for upadlosciowe.pl."""
 
+import sys
 from pathlib import Path
 from decouple import config, Csv
 
@@ -127,6 +128,9 @@ STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
 }
+# Manifest wymaga collectstatic — w testach użyj zwykłego storage.
+if 'test' in sys.argv:
+    STORAGES['staticfiles'] = {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'}
 
 # Za Traefik (HTTPS terminuje Traefik, do app idzie HTTP)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
