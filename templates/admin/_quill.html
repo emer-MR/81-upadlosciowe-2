@@ -1,13 +1,18 @@
-{# Edytor wizualny Quill - aktywuje się na każdym <textarea class="js-quill">. #}
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+{% load static %}
+{# Edytor wizualny Quill (self-hosted) - aktywuje się na każdym <textarea class="js-quill">. #}
+<link href="{% static 'vendor/quill.snow.css' %}" rel="stylesheet">
 <style>
-  .ql-editor { min-height: 260px; font-size: 15px; line-height: 1.6; }
+  .ql-editor { min-height: 260px; font-size: 15px; line-height: 1.6; color: #1f2937; background: #fff; }
   .ql-editor img { max-width: 100%; height: auto; }
   .ql-toolbar.ql-snow, .ql-container.ql-snow { border-color: #dde3de; }
   .ql-toolbar.ql-snow { border-radius: 6px 6px 0 0; background: #eef1ee; }
   .ql-container.ql-snow { border-radius: 0 0 6px 6px; background: #fff; }
+  /* Ciemny motyw Django admina nie może zaciemnić edytora (treść i tak renderuje się na jasnym tle strony) */
+  .ql-snow .ql-stroke { stroke: #444; }
+  .ql-snow .ql-fill { fill: #444; }
+  .ql-snow .ql-picker { color: #444; }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script src="{% static 'vendor/quill.js' %}"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     function csrfToken() {
@@ -42,30 +47,37 @@
       };
     }
     document.querySelectorAll('textarea.js-quill').forEach(function (ta) {
-      ta.style.display = 'none';
-      var holder = document.createElement('div');
-      holder.innerHTML = ta.value;
-      ta.parentNode.insertBefore(holder, ta);
-      var quill = new Quill(holder, {
-        theme: 'snow',
-        modules: {
-          toolbar: [
-            [{ header: [2, 3, 4, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ color: [] }, { background: [] }],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            [{ indent: '-1' }, { indent: '+1' }],
-            [{ align: [] }],
-            ['blockquote', 'code-block'],
-            ['link', 'image'],
-            ['clean'],
-          ],
-        },
-      });
-      quill.getModule('toolbar').addHandler('image', makeImageHandler(quill));
-      var sync = function () { ta.value = quill.root.innerHTML; };
-      quill.on('text-change', sync);
-      sync();
+      // Fallback: gdy Quill się nie załaduje / wywali, textarea zostaje edytowalna.
+      try {
+        if (typeof Quill === 'undefined') throw new Error('Quill not loaded');
+        var holder = document.createElement('div');
+        holder.innerHTML = ta.value;
+        ta.parentNode.insertBefore(holder, ta);
+        var quill = new Quill(holder, {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              [{ header: [2, 3, 4, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ color: [] }, { background: [] }],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              [{ indent: '-1' }, { indent: '+1' }],
+              [{ align: [] }],
+              ['blockquote', 'code-block'],
+              ['link', 'image'],
+              ['clean'],
+            ],
+          },
+        });
+        quill.getModule('toolbar').addHandler('image', makeImageHandler(quill));
+        var sync = function () { ta.value = quill.root.innerHTML; };
+        quill.on('text-change', sync);
+        sync();
+        ta.style.display = 'none';   // chowamy dopiero po udanej inicjalizacji
+      } catch (e) {
+        ta.style.display = '';
+        if (window.console) console.error('Quill init failed, textarea fallback:', e);
+      }
     });
   });
 </script>
