@@ -2,6 +2,9 @@
 {# Edytor wizualny Quill (self-hosted) - aktywuje się na każdym <textarea class="js-quill">. #}
 <link href="{% static 'vendor/quill.snow.css' %}" rel="stylesheet">
 <style>
+  /* Wiersze formularza w Django adminie to flex-containery — bez tego edytor
+     kurczy się do kilkudziesięciu pikseli i wygląda na nieaktywny. */
+  .quill-wrap { flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0; }
   .ql-editor { min-height: 260px; font-size: 15px; line-height: 1.6; color: #1f2937; background: #fff; }
   .ql-editor img { max-width: 100%; height: auto; }
   .ql-toolbar.ql-snow, .ql-container.ql-snow { border-color: #dde3de; }
@@ -50,9 +53,12 @@
       // Fallback: gdy Quill się nie załaduje / wywali, textarea zostaje edytowalna.
       try {
         if (typeof Quill === 'undefined') throw new Error('Quill not loaded');
+        var wrap = document.createElement('div');
+        wrap.className = 'quill-wrap';
         var holder = document.createElement('div');
         holder.innerHTML = ta.value;
-        ta.parentNode.insertBefore(holder, ta);
+        wrap.appendChild(holder);
+        ta.parentNode.insertBefore(wrap, ta);
         var quill = new Quill(holder, {
           theme: 'snow',
           modules: {
