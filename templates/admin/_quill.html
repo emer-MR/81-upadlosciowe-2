@@ -1,0 +1,71 @@
+{# Edytor wizualny Quill - aktywuje się na każdym <textarea class="js-quill">. #}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+<style>
+  .ql-editor { min-height: 260px; font-size: 15px; line-height: 1.6; }
+  .ql-editor img { max-width: 100%; height: auto; }
+  .ql-toolbar.ql-snow, .ql-container.ql-snow { border-color: #dde3de; }
+  .ql-toolbar.ql-snow { border-radius: 6px 6px 0 0; background: #eef1ee; }
+  .ql-container.ql-snow { border-radius: 0 0 6px 6px; background: #fff; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function csrfToken() {
+      var el = document.querySelector('[name=csrfmiddlewaretoken]');
+      return el ? el.value : '';
+    }
+    function makeImageHandler(quill) {
+      return function () {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function () {
+          var file = input.files[0];
+          if (!file) return;
+          var fd = new FormData();
+          fd.append('file', file);
+          fetch('/admin-api/upload-obraz/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken() },
+            body: fd,
+          }).then(function (r) { return r.json(); }).then(function (data) {
+            if (data && data.url) {
+              var range = quill.getSelection(true);
+              quill.insertEmbed(range.index, 'image', data.url, 'user');
+              quill.setSelection(range.index + 1);
+            } else {
+              alert((data && data.error) || 'Nie udało się wgrać obrazka.');
+            }
+          }).catch(function () { alert('Błąd podczas wgrywania obrazka.'); });
+        };
+        input.click();
+      };
+    }
+    document.querySelectorAll('textarea.js-quill').forEach(function (ta) {
+      ta.style.display = 'none';
+      var holder = document.createElement('div');
+      holder.innerHTML = ta.value;
+      ta.parentNode.insertBefore(holder, ta);
+      var quill = new Quill(holder, {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ header: [2, 3, 4, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ color: [] }, { background: [] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [{ indent: '-1' }, { indent: '+1' }],
+            [{ align: [] }],
+            ['blockquote', 'code-block'],
+            ['link', 'image'],
+            ['clean'],
+          ],
+        },
+      });
+      quill.getModule('toolbar').addHandler('image', makeImageHandler(quill));
+      var sync = function () { ta.value = quill.root.innerHTML; };
+      quill.on('text-change', sync);
+      sync();
+    });
+  });
+</script>
