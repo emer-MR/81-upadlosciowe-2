@@ -28,12 +28,25 @@ bez wyraźnej decyzji). Referencyjny klon starego repo: `~/repos/_ref-55-upadlos
 - Testy: `python manage.py test` (storage staticfiles przełącza się na zwykły
   w testach — patrz settings). Uwaga: SQLite `icontains` case-folduje tylko ASCII.
 
+## Dev i testy lokalne
+
+- Bez Node.js na maszynie dev: CSS buduje binarka `.bin/tailwindcss` (gitignored):
+  `.bin/tailwindcss -i static/src/input.css -o static/css/output.css --minify`.
+- Kontener prod-like: `docker compose -f docker-compose.local.yml up -d --build`
+  → `http://127.0.0.1:8090` (env z `.env.docker-local`, dane w `local-data/`).
+  Po zmianie szablonów/statyków konieczny `--build` (collectstatic jest w obrazie).
+- Dane demo: `manage.py seed_demo [--clear]` (7 ofert, zdjęcia, PDF, druga edycja).
+- Do diagnozy problemów widocznych tylko w przeglądarce jest Playwright w `.venv`
+  (chromium pobrany lokalnie) — tak wykryto zwężenie edytora Quill w adminie.
+
 ## Deploy
 
 VPS Hostinger, `/opt/upadlosciowe-portal`, Traefik (labels w compose),
 GH Actions → `deploy.sh`. Zmienne w `.env` (patrz `.env.example`).
 `COMING_SOON=True` = zaślepka (middleware przepuszcza /admin/ i /media/,
 robots.txt zwraca wtedy Disallow: /).
+Pierwsza instalacja krok po kroku: `docs/DEPLOY.md`.
+Repo: `github.com/emer-MR/81-upadlosciowe-2`.
 
 ## Stan projektu
 
